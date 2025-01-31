@@ -1,0 +1,63 @@
+document.getElementById("email").value;
+      const username = document.getElementById("username").value;
+      const phone = document.getElementById("phone").value;
+      const password = document.getElementById("password").value;
+
+      // Use Firebase Authentication to create a new user with email and password
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userAuth) => {
+          const user = userAuth.user; // Get the created user object
+
+          // Display a success message to the user
+          document.getElementById("message").innerHTML = "Registration Successful";
+
+          // 
+          // Save additional user details (username and phone) to the Realtime Database
+          //
+          const userRef = ref(database, 'users/' + user.uid); // Reference to the user's data location
+          set(userRef, {
+            email: email, // Store user's email
+            username: username, // Store user's username
+            phone: phone, // Store user's phone number
+            uid: user.uid // Store user's unique ID
+          });
+
+          // Hide the registration form and show the user details section
+          document.getElementById('registration-form').classList.add('hidden');
+          document.getElementById('user-details').classList.remove('hidden');
+
+          // Populate the user details section with the entered data
+          document.getElementById("user-email").innerText = "Email: " + email;
+          document.getElementById("user-username").innerText = "Username: " + username;
+          document.getElementById("user-phone").innerText = "Phone Number: " + phone;
+        })
+        .catch((error) => {
+          // If there's an error during registration, display the error message
+          document.getElementById("message").innerHTML = "Error: " + error.message;
+        });
+    });
+
+    // 
+    // Event listener for the logout button.
+    // It handles signing out the user when clicked.
+    //
+    const logoutButton = document.getElementById('logout-button');
+    logoutButton.addEventListener('click', () => {
+      // Use Firebase Authentication to sign out the current user
+      signOut(auth)
+        .then(() => {
+          // If sign-out is successful, show the registration form and hide user details
+          document.getElementById('registration-form').classList.remove('hidden');
+          document.getElementById('user-details').classList.add('hidden');
+          
+          // Display a logout confirmation message
+          document.getElementById("message").innerHTML = "You have been logged out.";
+        })
+        .catch((error) => {
+          // If there's an error during sign out, display the error message
+          document.getElementById("message").innerHTML = "Error: " + error.message;
+        });
+    });
+  </script>
+</body>
+</html>
